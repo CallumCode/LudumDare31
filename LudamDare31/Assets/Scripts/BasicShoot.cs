@@ -34,10 +34,9 @@ public class BasicShoot : MonoBehaviour
 	void ShootAtMouse()
 	{
 		if (Input.GetButtonDown("Fire1"))
-		{		
-			Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-			RaycastHit hit;
-			if (Physics.Raycast(ray , out hit))			
+		{
+            RaycastHit2D hit = Physics2D.Raycast(Camera.main.ScreenToWorldPoint(Input.mousePosition), Vector2.zero);
+            if (hit)			
 			{
 				clickPoint = new Vector3( hit.point.x , hit.point.y ,  transform.position.z)  ;
 				Vector3 dir = clickPoint - transform.position;

@@ -18,6 +18,6 @@ public class BasicProjectile : MonoBehaviour {
 
 	void Movement()
 	{
-		transform.Translate(transform.right * Time.deltaTime * speed);
+		transform.Translate( Vector3.up * Time.deltaTime * speed );
 	}
 }
