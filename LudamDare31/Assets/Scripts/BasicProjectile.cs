@@ -1,9 +1,11 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class BasicProjectile : MonoBehaviour {
+public class BasicProjectile : MonoBehaviour
+{
 
-	public float speed = 10;
+    public float damage = 50;
+    public float speed = 10;
 	// Use this for initialization
 	void Start () 
 	{
@@ -20,4 +22,9 @@ public class BasicProjectile : MonoBehaviour {
 	{
 		transform.Translate( Vector3.up * Time.deltaTime * speed );
 	}
+
+    void OnBecameInvisible()
+    {
+        Destroy(gameObject);
+    }
 }

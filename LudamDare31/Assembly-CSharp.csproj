@@ -46,9 +46,11 @@
 	</Reference>
   </ItemGroup>
   <ItemGroup>
+     <Compile Include="Assets\Scripts\BarScript.cs" />
      <Compile Include="Assets\Scripts\BasicProjectile.cs" />
      <Compile Include="Assets\Scripts\BasicShip.cs" />
      <Compile Include="Assets\Scripts\BasicShoot.cs" />
+     <Compile Include="Assets\Scripts\Menu.cs" />
  <Reference Include="UnityEngine.UI">
  <HintPath>C:/Program Files (x86)/Unity/Editor/Data/UnityExtensions/Unity/GUISystem/4.6.0/UnityEngine.UI.dll</HintPath>
  </Reference>

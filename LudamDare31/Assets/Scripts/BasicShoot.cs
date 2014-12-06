@@ -3,58 +3,102 @@ using System.Collections;
 
 public class BasicShoot : MonoBehaviour
 {
+    public GameObject projectileObject = null;
+    public GameObject BarPrefab;
 
-	public float fireRate = 1;
-	float fireRateTimer = 0;
- 
-	public GameObject projectileObject = null;
+    GameObject hpBarObject;
+    BarScript hpBarScript;
+
+    public float fireRate = 1;
+    float fireRateTimer = 0;
+
+    Vector3 clickPoint = Vector2.zero;
+
+    const float maxHealth = 100;
+    public float health = maxHealth;
+
+    // Use this for initialization
+    void Start()
+    {
+        Init();
+    }
 
 
-	Vector3 clickPoint = Vector3.zero;
+    protected virtual void Init()
+    {
+        Physics2D.IgnoreLayerCollision(8, 10);
 
- 
+        hpBarObject = Instantiate(BarPrefab, transform.position, transform.rotation) as GameObject;
+        hpBarScript = hpBarObject.GetComponentInChildren<BarScript>();
+        hpBarScript.objectToFollow = transform;
+    }
+    // Update is called once per frame
+    void Update()
+    {
 
-	// Use this for initialization
-	void Start () 
-	{
- 	}
-	
-	// Update is called once per frame
-	void Update () 
-	{
-		if(Time.time > (fireRateTimer + 1/fireRate))
-	    {
-			ShootAtMouse();
-		}
+        ShootAtMouse();
 
-	}
 
-	
+        if (health <= 0)
+        {
+            DestroySelf();
+        }
 
-	void ShootAtMouse()
-	{
-		if (Input.GetButtonDown("Fire1"))
-		{
-            RaycastHit2D hit = Physics2D.Raycast(Camera.main.ScreenToWorldPoint(Input.mousePosition), Vector2.zero);
-            if (hit)			
-			{
-				clickPoint = new Vector3( hit.point.x , hit.point.y ,  transform.position.z)  ;
-				Vector3 dir = clickPoint - transform.position;
-				
-				dir.Normalize();
+    }
 
-				Quaternion ori = Quaternion.LookRotation(Vector3.forward, dir);
-			
+    void ShootAtMouse()
+    {
+        if (Input.GetButtonDown("Fire1") && (Time.time > (fireRateTimer + 1 / fireRate)))
+        {
+            fireRateTimer = Time.time;
 
-				Instantiate(projectileObject, transform.position ,ori);
- 			}
-			
-		}
-	}
+            audio.Play();
 
-		void OnDrawGizmosSelected()
-		{
-			Gizmos.color = Color.red;
-		Gizmos.DrawCube(clickPoint, new Vector3( 0.5f , 0.5f , 0.5f));
-		}
+            clickPoint = Input.mousePosition;
+
+            Vector3 dir = clickPoint - Camera.main.WorldToScreenPoint(transform.position);
+            dir.Normalize();
+            Quaternion ori = Quaternion.LookRotation(Vector3.forward, dir);
+            Instantiate(projectileObject, transform.position, ori);
+        }
+    }
+
+    void OnCollisionEnter2D(Collision2D coll)
+    {
+        DoCollision(coll);
+    }
+
+    protected virtual void DoCollision(Collision2D coll)
+    {
+        if (coll.gameObject.CompareTag("Projectile"))
+        {
+            BasicProjectile basicProjectile = coll.gameObject.GetComponent<BasicProjectile>();
+            TakeDamage(basicProjectile.damage);
+            Destroy(coll.gameObject);
+        }
+
+        
+        if (coll.gameObject.CompareTag("Ship"))
+        {
+            BasicShip basicShip = coll.gameObject.GetComponent<BasicShip>();
+            TakeDamage(basicShip.crashDamage);
+        }
+    }
+
+    void TakeDamage(float dam)
+    {
+        health -= dam;
+        health = Mathf.Clamp(health, 0, maxHealth);
+
+        hpBarScript.SetValue(health / maxHealth);
+    }
+
+
+    void DestroySelf()
+    {
+        Destroy(hpBarObject);
+        Destroy(gameObject);
+    }
 }
+
+
