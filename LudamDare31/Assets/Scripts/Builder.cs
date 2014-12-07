@@ -3,6 +3,7 @@ using System.Collections;
 
 public class Builder : MonoBehaviour
 {
+    public GameObject BasicShooter;
 
 	// Use this for initialization
 	void Start () 

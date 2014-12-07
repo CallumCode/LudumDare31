@@ -61,7 +61,6 @@ public class BasicShip : MonoBehaviour
         if (health <= 0)
         {
             DestroySelf();
-
         }
 	}
 
@@ -92,8 +91,6 @@ public class BasicShip : MonoBehaviour
             Debug.Log(hit.collider.tag);
             Vector3 target = new Vector3(hit.point.x, hit.point.y, 0);
      
-
-
             Vector3 fly = Vector3.Normalize(target - transform.position);
             Vector3 orbit = Vector3.Cross(fly, Vector3.forward);
             float t = Vector3.Distance(target, transform.position) / (startDist);
@@ -118,9 +115,7 @@ public class BasicShip : MonoBehaviour
             BasicProjectile basicProjectile = coll.gameObject.GetComponent<BasicProjectile>();
             TakeDamage(basicProjectile.damage);
         }
-
     }
-
  
 
     void TakeDamage(float dam)

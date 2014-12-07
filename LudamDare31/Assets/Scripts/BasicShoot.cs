@@ -17,6 +17,10 @@ public class BasicShoot : MonoBehaviour
     const float maxHealth = 100;
     public float health = maxHealth;
 
+    public enum ModuleStateType { shop, preview, built };
+    public ModuleStateType moduleState = ModuleStateType.preview;
+
+ 
     // Use this for initialization
     void Start()
     {
@@ -35,15 +39,45 @@ public class BasicShoot : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        switch (moduleState)
+        {
+            case ModuleStateType.preview:
+                {
+                    PreviewUpdate();
+                }
+                break;
+            case ModuleStateType.built:
+                {
+                    BuiltUpdate();
+                }
+                break;
+            case ModuleStateType.shop:
+                {
+                    ShopUpdate();
+                }
+                break;
+        }
 
+
+    }
+
+    void PreviewUpdate()
+    {
+
+    }
+    void ShopUpdate()
+    {
+
+    }
+
+    void BuiltUpdate()
+    {
         ShootAtMouse();
-
 
         if (health <= 0)
         {
             DestroySelf();
         }
-
     }
 
     void ShootAtMouse()
@@ -77,7 +111,7 @@ public class BasicShoot : MonoBehaviour
             Destroy(coll.gameObject);
         }
 
-        
+
         if (coll.gameObject.CompareTag("Ship"))
         {
             BasicShip basicShip = coll.gameObject.GetComponent<BasicShip>();
@@ -98,6 +132,35 @@ public class BasicShoot : MonoBehaviour
     {
         Destroy(hpBarObject);
         Destroy(gameObject);
+    }
+
+    void ChaingeState(ModuleStateType newState)
+    {
+        switch (newState)
+        {
+            case ModuleStateType.preview:
+                {
+                    Color color = renderer.material.color;
+                    color.a = 0.5f;
+                    renderer.material.color = color;
+
+                }
+                break;
+            case ModuleStateType.built:
+                {
+                    Color color = renderer.material.color;
+                    color.a = 1;
+                    renderer.material.color = color;
+                }
+                break;
+            case ModuleStateType.shop:
+                {
+
+                }
+                break;
+        }
+
+        moduleState = newState;
     }
 }
 
