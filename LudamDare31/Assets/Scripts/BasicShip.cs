@@ -30,7 +30,9 @@ public class BasicShip : MonoBehaviour
 
     Builder builderScript;
 
-    
+    AudioSource shootNoise;
+    AudioSource explosionNoise;
+
 	// Use this for initialization
 	void Start ()
     {
@@ -55,6 +57,11 @@ public class BasicShip : MonoBehaviour
         } 
            
        startDist = Vector3.Distance(target, transform.position);
+     
+        AudioSource[] sources = GetComponents<AudioSource>();
+
+       shootNoise = sources[0];
+       explosionNoise = sources[1];
 
     }
 	
@@ -66,7 +73,10 @@ public class BasicShip : MonoBehaviour
 
         if (health <= 0)
         {
-            DestroySelf();
+            float time = shootNoise.clip.length;
+            explosionNoise.Play();
+
+            Invoke("DestroySelf", time);
         }
 	}
 
@@ -84,7 +94,8 @@ public class BasicShip : MonoBehaviour
             Quaternion ori = Quaternion.LookRotation(Vector3.forward, dir);
 
             Instantiate(projectileObject, transform.position, ori);
-        
+            shootNoise.pitch = Random.Range(0.75f, 1.25f);
+            shootNoise.Play();
         }
     }
 

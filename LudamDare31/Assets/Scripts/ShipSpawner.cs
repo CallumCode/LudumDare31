@@ -11,7 +11,8 @@ public class ShipSpawner : MonoBehaviour {
 
     public Transform center;
 
-     
+    public float spawnRateGrowth = 0.001f;
+
 	// Use this for initialization
 	void Start () 
     {
@@ -26,10 +27,12 @@ public class ShipSpawner : MonoBehaviour {
 
     void SpawnBasicShips()
     {
+        basicSpawnRate += spawnRateGrowth * Time.deltaTime;
+
         if (Time.time > (basicSpawnTimer + 1 / basicSpawnRate))
         {
             basicSpawnTimer = Time.time;
-            Vector3 pos = new Vector3(GetOffScreen(2), GetOffScreen(1.1f) , -Camera.main.gameObject.transform.position.z);
+            Vector3 pos = new Vector3(GetOffScreen(1.5f), GetOffScreen(1.1f) , -Camera.main.gameObject.transform.position.z);
             pos = Camera.main.ViewportToWorldPoint(pos);
 
             Vector3 dir =  - transform.position;

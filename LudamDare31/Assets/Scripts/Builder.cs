@@ -64,8 +64,11 @@ public class Builder : MonoBehaviour
 
        if (moduleCounter <= 0)
        {
-           Application.LoadLevel("Menu");
-       }
+        float time = audio.clip.length;
+        Invoke("Lose", time);
+        audio.Play();
+
+      }
    }
 
    void UpdateIndexs()
@@ -96,4 +99,9 @@ public class Builder : MonoBehaviour
        return pos;
 
    }
+
+    void Lose()
+    {
+        Application.LoadLevel("Menu");
+    }
 }

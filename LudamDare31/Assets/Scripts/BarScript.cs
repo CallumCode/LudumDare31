@@ -17,7 +17,7 @@ public class BarScript : MonoBehaviour
     {
         if (objectToFollow != null)
         {
-            transform.position = objectToFollow.position + new Vector3(0, transform.localScale.y, 0);  
+            transform.position = objectToFollow.position;  
         }
  	}
 

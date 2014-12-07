@@ -39,6 +39,15 @@ public class BasicShoot : MonoBehaviour
     public Sprite buildBadSprite;
 
     public int listIndex = -1;
+
+    AudioSource shootNoise;
+    AudioSource explosionNoise;
+
+    public GameObject turret;
+
+    public GameObject laserSpawn;
+    public GameObject hpSpawn;
+
     // Use this for initialization
     void Start()
     {
@@ -51,14 +60,20 @@ public class BasicShoot : MonoBehaviour
 
         builderScript = builder;
  
-        hpBarObject = Instantiate(BarPrefab, transform.position, transform.rotation) as GameObject;
+        hpBarObject = Instantiate(BarPrefab, hpSpawn.transform.position, transform.rotation) as GameObject;
         hpBarScript = hpBarObject.GetComponentInChildren<BarScript>();
-        hpBarScript.objectToFollow = transform;
+        hpBarScript.objectToFollow = hpSpawn.transform;
 
         spriteRenderer = GetComponent<SpriteRenderer>();
         boxCollider2D = GetComponent<BoxCollider2D>();
 
         buildIndicatorRenderer = buildIndicatorObject.GetComponent<SpriteRenderer>();
+
+        AudioSource[] sources = GetComponents<AudioSource>();
+
+        shootNoise = sources[0];
+        explosionNoise = sources[1];
+
     }
     // Update is called once per frame
     void Update()
@@ -131,24 +146,34 @@ public class BasicShoot : MonoBehaviour
 
         if (health <= 0)
         {
-            DestroySelf();
-        }
+            float time = shootNoise.clip.length;
+            explosionNoise.Play();
+
+            Invoke("DestroySelf", time);
+         }
     }
 
     void ShootAtMouse()
     {
+        clickPoint = Input.mousePosition;
+
+
+        Vector3 dir = clickPoint - Camera.main.WorldToScreenPoint(transform.position);
+        dir.Normalize();
+
+        turret.transform.up = dir;
+
         if (Input.GetButtonDown("Fire1") && (Time.time > (fireRateTimer + 1 / fireRate)))
         {
             fireRateTimer = Time.time;
+            shootNoise.pitch = Random.Range(0.9f, 1.1f);
 
-            audio.Play();
+            shootNoise.Play();
 
-            clickPoint = Input.mousePosition;
 
-            Vector3 dir = clickPoint - Camera.main.WorldToScreenPoint(transform.position);
-            dir.Normalize();
+        
             Quaternion ori = Quaternion.LookRotation(Vector3.forward, dir);
-            Instantiate(projectileObject, transform.position, ori);
+            Instantiate(projectileObject, laserSpawn.transform.position, ori);
         }
     }
 
@@ -186,6 +211,7 @@ public class BasicShoot : MonoBehaviour
 
     void DestroySelf()
     {
+
         builderScript.ModuleLost(listIndex);
         Destroy(hpBarObject);
         Destroy(gameObject);
