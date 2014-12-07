@@ -4,8 +4,7 @@ using System.Collections;
 public class BasicShip : MonoBehaviour
 {
 
-    public Transform target;
-    public GameObject projectileObject = null;
+     public GameObject projectileObject = null;
  
     public GameObject BarPrefab;
     GameObject hpBarObject;
@@ -26,21 +25,30 @@ public class BasicShip : MonoBehaviour
     const float maxHealth = 100;
     public float health = maxHealth;
 
+    Vector3 centerPos = Vector3.zero;
 	// Use this for initialization
 	void Start ()
     {
-        Init();
-	}
+ 	}
 
-    protected virtual void Init()
+    public virtual void Init(   )
     {
+        
         Physics2D.IgnoreLayerCollision(9, 11);
+        Physics2D.IgnoreLayerCollision(11, 11);
 
-       hpBarObject = Instantiate(BarPrefab, transform.position, transform.rotation) as GameObject;
+       hpBarObject = Instantiate(BarPrefab, transform.position, Quaternion.identity) as GameObject;
        hpBarScript = hpBarObject.GetComponentInChildren<BarScript>();
        hpBarScript.objectToFollow = transform;
-
-       startDist = Vector3.Distance(target.position, transform.position);
+      
+        RaycastHit2D hit = Physics2D.Raycast(transform.position, Vector3.Normalize(centerPos - transform.position));
+        Vector3 target = Vector3.zero;
+        if (hit.collider != null)
+        {
+              target = new Vector3(hit.point.x, hit.point.y, 0);
+        } 
+           
+       startDist = Vector3.Distance(target, transform.position);
 
     }
 	
@@ -59,11 +67,14 @@ public class BasicShip : MonoBehaviour
 
     void Shooting()
     {
-        if (Time.time > (fireTimer + fireRate / 1) && (target != null))
+        RaycastHit2D hit = Physics2D.Raycast(transform.position, Vector3.Normalize(centerPos - transform.position));
+        if ((Time.time > (fireTimer + 1/fireRate ) ) && (hit.collider != null) && ( hit.collider.CompareTag("Station")) )
         {
+            Vector3 target = new Vector3(hit.point.x, hit.point.y, 0);
+
             fireTimer = Time.time;
 
-            Vector3 dir = target.position - transform.position;
+            Vector3 dir = target - transform.position;
             dir.Normalize();
             Quaternion ori = Quaternion.LookRotation(Vector3.forward, dir);
 
@@ -74,11 +85,18 @@ public class BasicShip : MonoBehaviour
 
     void Movement()
     {
-        if (target != null)
+        RaycastHit2D hit = Physics2D.Raycast(transform.position , Vector3.Normalize(centerPos - transform.position));
+        
+        if ((hit.collider != null ) )//&& hit.collider.CompareTag("Station"))
         {
-            Vector3 fly = Vector3.Normalize(target.position - transform.position);
+            Debug.Log(hit.collider.tag);
+            Vector3 target = new Vector3(hit.point.x, hit.point.y, 0);
+     
+
+
+            Vector3 fly = Vector3.Normalize(target - transform.position);
             Vector3 orbit = Vector3.Cross(fly, Vector3.forward);
-            float t = Vector3.Distance(target.position, transform.position) / (startDist);
+            float t = Vector3.Distance(target, transform.position) / (startDist);
             t = range - Mathf.Clamp01(t);
             t = Mathf.Clamp01(t);
             Vector3 dir = Vector3.Lerp(fly, orbit, t);
@@ -110,12 +128,12 @@ public class BasicShip : MonoBehaviour
         health -= dam;
         health = Mathf.Clamp(health, 0, maxHealth);
 
-        hpBarScript.SetValue(health / maxHealth);
+        if (hpBarScript != null) hpBarScript.SetValue(health / maxHealth);
     }
 
     protected virtual void DestroySelf()
     {
-        Destroy(hpBarObject);
+        if(hpBarObject != null)   Destroy(hpBarObject);
         Destroy(gameObject);
     }
 }
