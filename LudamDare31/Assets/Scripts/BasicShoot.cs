@@ -28,17 +28,18 @@ public class BasicShoot : MonoBehaviour
     SpriteRenderer spriteRenderer;
     BoxCollider2D boxCollider2D;
 
-    Builder builderScript; 
+    Builder builderScript;
+    bool buildOK = false;
     // Use this for initialization
     void Start()
     {
     }
 
 
-    public virtual void Init( Builder builder )
+    public virtual void Init(Builder builder)
     {
         Physics2D.IgnoreLayerCollision(8, 10);
-        
+
         builderScript = builder;
 
         hpBarObject = Instantiate(BarPrefab, transform.position, transform.rotation) as GameObject;
@@ -75,18 +76,23 @@ public class BasicShoot : MonoBehaviour
 
     void PreviewUpdate()
     {
-        Ray ray  =  Camera.main.ScreenPointToRay(Input.mousePosition);
+        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         RaycastHit hitInfo;
-       if (Physics.Raycast(ray, out hitInfo))
-       {
-           transform.position = hitInfo.point;
-       }
+        if (Physics.Raycast(ray, out hitInfo))
+        {
+            transform.position = hitInfo.point;
+        }
 
-       if (Input.GetMouseButtonDown(1) )
-       {
-           builderScript.RestockBasicShooter();
-           ChaingeState(ModuleStateType.built);
-       }
+        if (Input.GetMouseButtonDown(1))
+        {
+            if (buildOK == true)
+            {
+                builderScript.RestockBasicShooter();
+                ChaingeState(ModuleStateType.built);
+            }
+        }
+
+        buildOK = false;
     }
     void ShopUpdate()
     {
@@ -202,10 +208,14 @@ public class BasicShoot : MonoBehaviour
         }
     }
 
-    void OnTriggerEnter2D()
-    { 
-        
-    }
+    void OnTriggerStay2D(Collider2D other)
+    {
+        if (other.CompareTag("BuildOK"))
+        {
+            buildOK = true;
+        }
+
+     }
 }
 
 
