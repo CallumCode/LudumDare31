@@ -115,7 +115,14 @@ public class BasicShoot : MonoBehaviour
     }
     void ShopUpdate()
     {
-
+        if(builderScript.money > builderScript.basiShootCost)
+        {
+            buildIndicatorRenderer.sprite = buildOKSprite;
+        }
+        else
+        {
+            buildIndicatorRenderer.sprite = buildBadSprite;
+        }
     }
 
     void BuiltUpdate()
@@ -194,6 +201,8 @@ public class BasicShoot : MonoBehaviour
                     color.a = 0.5f;
                     renderer.material.color = color;
                     spriteRenderer.sprite = previewSprite;
+                    buildIndicatorObject.SetActive(true);
+
                 }
                 break;
             case ModuleStateType.built:
@@ -216,6 +225,8 @@ public class BasicShoot : MonoBehaviour
                     hpBarObject.SetActive(false);
                     spriteRenderer.sprite = shopSprite;
                     boxCollider2D.isTrigger = true;
+                    buildIndicatorObject.SetActive(true);
+
                 }
                 break;
         }
@@ -225,8 +236,9 @@ public class BasicShoot : MonoBehaviour
 
     void OnMouseDown()
     {
-        if (moduleState == ModuleStateType.shop)
+        if (moduleState == ModuleStateType.shop && builderScript.money > builderScript.basiShootCost)
         {
+            builderScript.money -= builderScript.basiShootCost;
             ChaingeState(ModuleStateType.preview);
 
         }

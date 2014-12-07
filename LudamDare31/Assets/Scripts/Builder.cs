@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+ using UnityEngine.UI;
 
 public class Builder : MonoBehaviour
 {
@@ -11,7 +12,14 @@ public class Builder : MonoBehaviour
     int moduleCounter = 0;
 
     public ArrayList modulesList;
-    
+
+    public float money = 0;
+    public float shipBounty = 10;
+    public GameObject moneyTextObject;
+    Text moneyText;
+    float moneyRate = 5;
+    public float basiShootCost = 100;
+
     // Use this for initialization
 	void Start () 
     {
@@ -24,13 +32,15 @@ public class Builder : MonoBehaviour
       
         modulesList.Add(startObject);
         RestockBasicShooter();
-            
+
+        moneyText = moneyTextObject.GetComponent<Text>();
 	}
 	
 	// Update is called once per frame
 	void Update ()
     {
-	    
+        money += moneyRate * Time.deltaTime;
+        moneyText.text = "Money " + Mathf.Round(money);
 	}
 
    public void RestockBasicShooter()

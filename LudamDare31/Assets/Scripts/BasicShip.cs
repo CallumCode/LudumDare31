@@ -144,6 +144,7 @@ public class BasicShip : MonoBehaviour
     {
         if(hpBarObject != null)   Destroy(hpBarObject);
         Destroy(gameObject);
+        builderScript.money += builderScript.shipBounty;
     }
 
 }
