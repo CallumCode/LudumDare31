@@ -38,6 +38,7 @@ public class BasicShoot : MonoBehaviour
     public Sprite buildOKSprite;
     public Sprite buildBadSprite;
 
+    public int listIndex = -1;
     // Use this for initialization
     void Start()
     {
@@ -49,7 +50,7 @@ public class BasicShoot : MonoBehaviour
         Physics2D.IgnoreLayerCollision(8, 10);
 
         builderScript = builder;
-
+ 
         hpBarObject = Instantiate(BarPrefab, transform.position, transform.rotation) as GameObject;
         hpBarScript = hpBarObject.GetComponentInChildren<BarScript>();
         hpBarScript.objectToFollow = transform;
@@ -151,7 +152,7 @@ public class BasicShoot : MonoBehaviour
 
     protected virtual void DoCollision(Collision2D coll)
     {
-        if (coll.gameObject.CompareTag("Projectile"))
+        if (coll.gameObject.CompareTag("ShipProjectile"))
         {
             BasicProjectile basicProjectile = coll.gameObject.GetComponent<BasicProjectile>();
             TakeDamage(basicProjectile.damage);
@@ -163,6 +164,7 @@ public class BasicShoot : MonoBehaviour
         {
             BasicShip basicShip = coll.gameObject.GetComponent<BasicShip>();
             TakeDamage(basicShip.crashDamage);
+            basicShip.TakeDamage(100);
         }
     }
 
@@ -177,7 +179,7 @@ public class BasicShoot : MonoBehaviour
 
     void DestroySelf()
     {
-        builderScript.ModuleLost();
+        builderScript.ModuleLost(listIndex);
         Destroy(hpBarObject);
         Destroy(gameObject);
     }
@@ -204,6 +206,9 @@ public class BasicShoot : MonoBehaviour
                     boxCollider2D.isTrigger = false;
 
                     buildIndicatorObject.SetActive(false);
+
+                    listIndex = builderScript.modulesList.Count;
+                    builderScript.modulesList.Add(gameObject);
                 }
                 break;
             case ModuleStateType.shop:

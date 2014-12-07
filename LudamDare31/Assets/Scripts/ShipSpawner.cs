@@ -4,14 +4,14 @@ using System.Collections;
 public class ShipSpawner : MonoBehaviour {
 
     public GameObject BasicShootPrefab;
+    public GameObject BuilderObject;
 
     public float basicSpawnRate = 1;
     float basicSpawnTimer = 0;
 
     public Transform center;
 
-    float dist = 2;
-
+     
 	// Use this for initialization
 	void Start () 
     {
@@ -29,26 +29,35 @@ public class ShipSpawner : MonoBehaviour {
         if (Time.time > (basicSpawnTimer + 1 / basicSpawnRate))
         {
             basicSpawnTimer = Time.time;
-            Vector3 pos = Vector3.zero;
-            pos.x = Random.value + 0.25f;
-            pos.x = Mathf.Clamp01(pos.x);
-            if (Random.value > 0.5F) pos.x *= -1;
-            pos.x *= dist;
+            Vector3 pos = new Vector3(GetOffScreen(2), GetOffScreen(1.1f) , -Camera.main.gameObject.transform.position.z);
+            pos = Camera.main.ViewportToWorldPoint(pos);
 
-            pos.y = Random.value;
-            pos.y = Mathf.Clamp01(pos.y);
-            if (Random.value > 0.5F) pos.y *= -1;
-            pos.y *= dist;
-
-            Vector3 dir = pos - transform.position;
+            Vector3 dir =  - transform.position;
             dir.Normalize();
 
             Quaternion orir = Quaternion.LookRotation(Vector3.forward, dir);
 
             GameObject ship =  Instantiate(BasicShootPrefab, pos, orir) as GameObject;
 
-            ship.GetComponent<BasicShip>().Init();
+            ship.GetComponent<BasicShip>().Init(BuilderObject.GetComponent<Builder>());
         }
 
+    }
+
+    float GetOffScreen(float max)
+    {
+        float value = Random.value;
+
+        if (value > 0.5f)
+        {
+            value = Random.Range(1.0f ,max);
+        }
+        else
+        {
+            value = Random.Range(-max, 0.0f);
+        }
+
+ 
+        return value;
     }
 }

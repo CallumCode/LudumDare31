@@ -9,14 +9,20 @@ public class Builder : MonoBehaviour
     public Transform startTransform;
 
     int moduleCounter = 0;
-	// Use this for initialization
+
+    public ArrayList modulesList;
+    
+    // Use this for initialization
 	void Start () 
     {
+        modulesList = new ArrayList();
+
         GameObject startObject = Instantiate(BasicShooter, startTransform.position, Quaternion.identity) as GameObject;
         BasicShoot startScript = startObject.GetComponent<BasicShoot>();
-        startScript.Init(this);
+        startScript.Init(this );
         startScript.ChaingeState(BasicShoot.ModuleStateType.built);
-
+      
+        modulesList.Add(startObject);
         RestockBasicShooter();
             
 	}
@@ -33,16 +39,51 @@ public class Builder : MonoBehaviour
         BasicShoot shopScript = shopObject.GetComponent<BasicShoot>();
         shopScript.Init(this);
         shopScript.ChaingeState(BasicShoot.ModuleStateType.shop);
-        moduleCounter++;
+        moduleCounter++; 
     }
 
-   public void ModuleLost()
+   public void ModuleLost(int index)
    {
        moduleCounter--;
+
+       if (index != -1)
+       {
+           modulesList.RemoveAt(index);
+           UpdateIndexs();
+       }
 
        if (moduleCounter <= 0)
        {
            Application.LoadLevel("Menu");
        }
+   }
+
+   void UpdateIndexs()
+   { 
+        for(int i = 0; i < modulesList.Count ; i++)
+       {
+           GameObject mod = (GameObject)modulesList[i];
+           if (mod != null) mod.GetComponent<BasicShoot>().listIndex = i; 
+       }
+   }
+
+    public   Vector3 GetAvgPos()
+   {
+       Vector3 pos = Vector3.zero;
+       float count = 1;
+
+       if (modulesList != null)
+       {
+           for (int i = 0; i < modulesList.Count; i++)
+           {
+               GameObject mod = (GameObject)modulesList[i];
+               if (mod != null) pos += mod.transform.position;
+               count++;
+           }
+
+       }
+        pos = pos/ count;
+       return pos;
+
    }
 }

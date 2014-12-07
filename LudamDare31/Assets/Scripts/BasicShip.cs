@@ -13,7 +13,8 @@ public class BasicShip : MonoBehaviour
 
     float speed = 2;
 
-    float range = 1.5f;
+   public  float rangeFraction = 0.2f;
+
 
     float startDist = 1;
 
@@ -26,14 +27,19 @@ public class BasicShip : MonoBehaviour
     public float health = maxHealth;
 
     Vector3 centerPos = Vector3.zero;
+
+    Builder builderScript;
+
+    
 	// Use this for initialization
 	void Start ()
     {
  	}
 
-    public virtual void Init(   )
+    public virtual void Init(Builder builder)
     {
-        
+        builderScript = builder;
+
         Physics2D.IgnoreLayerCollision(9, 11);
         Physics2D.IgnoreLayerCollision(11, 11);
 
@@ -43,9 +49,9 @@ public class BasicShip : MonoBehaviour
       
         RaycastHit2D hit = Physics2D.Raycast(transform.position, Vector3.Normalize(centerPos - transform.position));
         Vector3 target = Vector3.zero;
-        if (hit.collider != null)
+        if (hit.collider != null && renderer.isVisible == true) 
         {
-              target = new Vector3(hit.point.x, hit.point.y, 0);
+           target = new Vector3(hit.point.x, hit.point.y, 0);
         } 
            
        startDist = Vector3.Distance(target, transform.position);
@@ -84,23 +90,31 @@ public class BasicShip : MonoBehaviour
 
     void Movement()
     {
-        RaycastHit2D hit = Physics2D.Raycast(transform.position , Vector3.Normalize(centerPos - transform.position));
+
+
+
+        // check inwards.
+      //  RaycastHit2D hit = Physics2D.Raycast(transform.position , Vector3.Normalize(centerPos - transform.position));
         
-        if ((hit.collider != null ) )//&& hit.collider.CompareTag("Station"))
-        {
-         //   Debug.Log(hit.collider.tag);
-            Vector3 target = new Vector3(hit.point.x, hit.point.y, 0);
-     
+     //   if ((hit.collider != null))//&& hit.collider.CompareTag("Station"))
+      //  {
+
+
+            //   Debug.Log(hit.collider.tag);
+            Vector3 target = builderScript.GetAvgPos();
+
             Vector3 fly = Vector3.Normalize(target - transform.position);
             Vector3 orbit = Vector3.Cross(fly, Vector3.forward);
             float t = Vector3.Distance(target, transform.position) / (startDist);
-            t = range - Mathf.Clamp01(t);
+            t = (1 + rangeFraction) - Mathf.Clamp01(t);
             t = Mathf.Clamp01(t);
             Vector3 dir = Vector3.Lerp(fly, orbit, t);
             dir.Normalize();
             transform.up = dir;
+
+        //}
             transform.Translate(Vector3.up * Time.deltaTime * speed);
-        }
+        
     }
 
     void OnCollisionEnter2D(Collision2D coll)
@@ -110,7 +124,7 @@ public class BasicShip : MonoBehaviour
 
     protected virtual void DoCollision(Collision2D coll)
     {
-        if (coll.gameObject.CompareTag("Projectile"))
+        if (coll.gameObject.CompareTag("StationProjectile"))
         {
             BasicProjectile basicProjectile = coll.gameObject.GetComponent<BasicProjectile>();
             TakeDamage(basicProjectile.damage);
@@ -118,7 +132,7 @@ public class BasicShip : MonoBehaviour
     }
  
 
-    void TakeDamage(float dam)
+   public void TakeDamage(float dam)
     {
         health -= dam;
         health = Mathf.Clamp(health, 0, maxHealth);
