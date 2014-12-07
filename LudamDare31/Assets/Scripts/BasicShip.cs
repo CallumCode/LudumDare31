@@ -88,7 +88,7 @@ public class BasicShip : MonoBehaviour
         
         if ((hit.collider != null ) )//&& hit.collider.CompareTag("Station"))
         {
-            Debug.Log(hit.collider.tag);
+         //   Debug.Log(hit.collider.tag);
             Vector3 target = new Vector3(hit.point.x, hit.point.y, 0);
      
             Vector3 fly = Vector3.Normalize(target - transform.position);
@@ -131,4 +131,5 @@ public class BasicShip : MonoBehaviour
         if(hpBarObject != null)   Destroy(hpBarObject);
         Destroy(gameObject);
     }
+
 }

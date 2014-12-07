@@ -20,21 +20,33 @@ public class BasicShoot : MonoBehaviour
     public enum ModuleStateType { shop, preview, built };
     public ModuleStateType moduleState = ModuleStateType.preview;
 
- 
+
+    public Sprite shopSprite;
+    public Sprite previewSprite;
+    public Sprite buildSprite;
+
+    SpriteRenderer spriteRenderer;
+    BoxCollider2D boxCollider2D;
+
+    Builder builderScript; 
     // Use this for initialization
     void Start()
     {
-        Init();
     }
 
 
-    protected virtual void Init()
+    public virtual void Init( Builder builder )
     {
         Physics2D.IgnoreLayerCollision(8, 10);
+        
+        builderScript = builder;
 
         hpBarObject = Instantiate(BarPrefab, transform.position, transform.rotation) as GameObject;
         hpBarScript = hpBarObject.GetComponentInChildren<BarScript>();
         hpBarScript.objectToFollow = transform;
+
+        spriteRenderer = GetComponent<SpriteRenderer>();
+        boxCollider2D = GetComponent<BoxCollider2D>();
     }
     // Update is called once per frame
     void Update()
@@ -63,7 +75,18 @@ public class BasicShoot : MonoBehaviour
 
     void PreviewUpdate()
     {
+        Ray ray  =  Camera.main.ScreenPointToRay(Input.mousePosition);
+        RaycastHit hitInfo;
+       if (Physics.Raycast(ray, out hitInfo))
+       {
+           transform.position = hitInfo.point;
+       }
 
+       if (Input.GetMouseButtonDown(1) )
+       {
+           builderScript.RestockBasicShooter();
+           ChaingeState(ModuleStateType.built);
+       }
     }
     void ShopUpdate()
     {
@@ -130,11 +153,12 @@ public class BasicShoot : MonoBehaviour
 
     void DestroySelf()
     {
+        builderScript.ModuleLost();
         Destroy(hpBarObject);
         Destroy(gameObject);
     }
 
-    void ChaingeState(ModuleStateType newState)
+    public void ChaingeState(ModuleStateType newState)
     {
         switch (newState)
         {
@@ -143,7 +167,7 @@ public class BasicShoot : MonoBehaviour
                     Color color = renderer.material.color;
                     color.a = 0.5f;
                     renderer.material.color = color;
-
+                    spriteRenderer.sprite = previewSprite;
                 }
                 break;
             case ModuleStateType.built:
@@ -151,17 +175,38 @@ public class BasicShoot : MonoBehaviour
                     Color color = renderer.material.color;
                     color.a = 1;
                     renderer.material.color = color;
+                    hpBarObject.SetActive(true);
+                    spriteRenderer.sprite = buildSprite;
+                    boxCollider2D.isTrigger = false;
+
                 }
                 break;
             case ModuleStateType.shop:
                 {
-
+                    hpBarObject.SetActive(false);
+                    spriteRenderer.sprite = shopSprite;
+                    boxCollider2D.isTrigger = true;
                 }
                 break;
         }
 
         moduleState = newState;
     }
+
+    void OnMouseDown()
+    {
+        if (moduleState == ModuleStateType.shop)
+        {
+            ChaingeState(ModuleStateType.preview);
+
+        }
+    }
+
+    void OnTriggerEnter2D()
+    { 
+        
+    }
 }
+
 
 
