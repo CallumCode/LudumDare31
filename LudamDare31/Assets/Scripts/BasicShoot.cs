@@ -30,12 +30,20 @@ public class BasicShoot : MonoBehaviour
 
     Builder builderScript;
     bool buildOK = false;
+    bool stationTouching = false;
+
+    public GameObject buildIndicatorObject;
+    SpriteRenderer buildIndicatorRenderer;
+
+    public Sprite buildOKSprite;
+    public Sprite buildBadSprite;
+
     // Use this for initialization
     void Start()
     {
+
     }
-
-
+    
     public virtual void Init(Builder builder)
     {
         Physics2D.IgnoreLayerCollision(8, 10);
@@ -48,6 +56,8 @@ public class BasicShoot : MonoBehaviour
 
         spriteRenderer = GetComponent<SpriteRenderer>();
         boxCollider2D = GetComponent<BoxCollider2D>();
+
+        buildIndicatorRenderer = buildIndicatorObject.GetComponent<SpriteRenderer>();
     }
     // Update is called once per frame
     void Update()
@@ -83,16 +93,24 @@ public class BasicShoot : MonoBehaviour
             transform.position = hitInfo.point;
         }
 
-        if (Input.GetMouseButtonDown(1))
+        if (buildOK == true && stationTouching == false)
         {
-            if (buildOK == true)
+
+            if (Input.GetMouseButtonDown(1))
             {
                 builderScript.RestockBasicShooter();
                 ChaingeState(ModuleStateType.built);
             }
+
+            buildIndicatorRenderer.sprite = buildOKSprite;
+        }
+        else
+        {
+            buildIndicatorRenderer.sprite  = buildBadSprite;
         }
 
         buildOK = false;
+        stationTouching = false;
     }
     void ShopUpdate()
     {
@@ -185,6 +203,7 @@ public class BasicShoot : MonoBehaviour
                     spriteRenderer.sprite = buildSprite;
                     boxCollider2D.isTrigger = false;
 
+                    buildIndicatorObject.SetActive(false);
                 }
                 break;
             case ModuleStateType.shop:
@@ -215,6 +234,11 @@ public class BasicShoot : MonoBehaviour
             buildOK = true;
         }
 
+        if (other.CompareTag("Station"))
+        {
+            stationTouching = true;
+        }
+            
      }
 }
 
