@@ -4,8 +4,8 @@ using System.Collections;
 public class BasicShip : MonoBehaviour
 {
 
-     public GameObject projectileObject = null;
- 
+    public GameObject projectileObject = null;
+
     public GameObject BarPrefab;
     GameObject hpBarObject;
 
@@ -13,7 +13,7 @@ public class BasicShip : MonoBehaviour
 
     float speed = 2;
 
-   public  float rangeFraction = 0.2f;
+    public float rangeFraction = 0.2f;
 
 
     float startDist = 1;
@@ -33,10 +33,13 @@ public class BasicShip : MonoBehaviour
     AudioSource shootNoise;
     AudioSource explosionNoise;
 
-	// Use this for initialization
-	void Start ()
+    public GameObject hpPoint;
+    public GameObject laserSpawn;
+    public GameObject turret;
+    // Use this for initialization
+    void Start()
     {
- 	}
+    }
 
     public virtual void Init(Builder builder)
     {
@@ -45,28 +48,28 @@ public class BasicShip : MonoBehaviour
         Physics2D.IgnoreLayerCollision(9, 11);
         Physics2D.IgnoreLayerCollision(11, 11);
 
-       hpBarObject = Instantiate(BarPrefab, transform.position, Quaternion.identity) as GameObject;
-       hpBarScript = hpBarObject.GetComponentInChildren<BarScript>();
-       hpBarScript.objectToFollow = transform;
-      
+        hpBarObject = Instantiate(BarPrefab, hpPoint.transform.position, Quaternion.identity) as GameObject;
+        hpBarScript = hpBarObject.GetComponentInChildren<BarScript>();
+        hpBarScript.objectToFollow = hpPoint.transform;
+
         RaycastHit2D hit = Physics2D.Raycast(transform.position, Vector3.Normalize(centerPos - transform.position));
         Vector3 target = Vector3.zero;
-        if (hit.collider != null && renderer.isVisible == true) 
+        if (hit.collider != null && renderer.isVisible == true)
         {
-           target = new Vector3(hit.point.x, hit.point.y, 0);
-        } 
-           
-       startDist = Vector3.Distance(target, transform.position);
-     
+            target = new Vector3(hit.point.x, hit.point.y, 0);
+        }
+
+        startDist = Vector3.Distance(target, transform.position);
+
         AudioSource[] sources = GetComponents<AudioSource>();
 
-       shootNoise = sources[0];
-       explosionNoise = sources[1];
+        shootNoise = sources[0];
+        explosionNoise = sources[1];
 
     }
-	
-	// Update is called once per frame
-	void Update ()
+
+    // Update is called once per frame
+    void Update()
     {
         Movement();
         Shooting();
@@ -78,24 +81,33 @@ public class BasicShip : MonoBehaviour
 
             Invoke("DestroySelf", time);
         }
-	}
+    }
 
     void Shooting()
     {
         RaycastHit2D hit = Physics2D.Raycast(transform.position, Vector3.Normalize(centerPos - transform.position));
-        if ((Time.time > (fireTimer + 1/fireRate ) ) && (hit.collider != null) && ( hit.collider.CompareTag("Station")) )
+        if ((hit.collider != null) && (hit.collider.CompareTag("Station")))
         {
             Vector3 target = new Vector3(hit.point.x, hit.point.y, 0);
 
-            fireTimer = Time.time;
 
             Vector3 dir = target - transform.position;
             dir.Normalize();
-            Quaternion ori = Quaternion.LookRotation(Vector3.forward, dir);
+          turret.transform.up = dir;
 
-            Instantiate(projectileObject, transform.position, ori);
-            shootNoise.pitch = Random.Range(0.75f, 1.25f);
-            shootNoise.Play();
+            if (Time.time > (fireTimer + 1 / fireRate))
+            {
+
+
+                fireTimer = Time.time;
+
+                Quaternion ori = Quaternion.LookRotation(Vector3.forward, dir);
+
+                Instantiate(projectileObject, laserSpawn.transform.position, ori);
+                shootNoise.pitch = Random.Range(0.75f, 1.25f);
+                shootNoise.Play();
+
+            }
         }
     }
 
@@ -105,27 +117,27 @@ public class BasicShip : MonoBehaviour
 
 
         // check inwards.
-      //  RaycastHit2D hit = Physics2D.Raycast(transform.position , Vector3.Normalize(centerPos - transform.position));
-        
-     //   if ((hit.collider != null))//&& hit.collider.CompareTag("Station"))
-      //  {
+        //  RaycastHit2D hit = Physics2D.Raycast(transform.position , Vector3.Normalize(centerPos - transform.position));
+
+        //   if ((hit.collider != null))//&& hit.collider.CompareTag("Station"))
+        //  {
 
 
-            //   Debug.Log(hit.collider.tag);
-            Vector3 target = builderScript.GetAvgPos();
+        //   Debug.Log(hit.collider.tag);
+        Vector3 target = builderScript.GetAvgPos();
 
-            Vector3 fly = Vector3.Normalize(target - transform.position);
-            Vector3 orbit = Vector3.Cross(fly, Vector3.forward);
-            float t = Vector3.Distance(target, transform.position) / (startDist);
-            t = (1 + rangeFraction) - Mathf.Clamp01(t);
-            t = Mathf.Clamp01(t);
-            Vector3 dir = Vector3.Lerp(fly, orbit, t);
-            dir.Normalize();
-            transform.up = dir;
+        Vector3 fly = Vector3.Normalize(target - transform.position);
+        Vector3 orbit = Vector3.Cross(fly, Vector3.forward);
+        float t = Vector3.Distance(target, transform.position) / (startDist);
+        t = (1 + rangeFraction) - Mathf.Clamp01(t);
+        t = Mathf.Clamp01(t);
+        Vector3 dir = Vector3.Lerp(fly, orbit, t);
+        dir.Normalize();
+        transform.up = dir;
 
         //}
-            transform.Translate(Vector3.up * Time.deltaTime * speed);
-        
+        transform.Translate(Vector3.up * Time.deltaTime * speed);
+
     }
 
     void OnCollisionEnter2D(Collision2D coll)
@@ -141,9 +153,9 @@ public class BasicShip : MonoBehaviour
             TakeDamage(basicProjectile.damage);
         }
     }
- 
 
-   public void TakeDamage(float dam)
+
+    public void TakeDamage(float dam)
     {
         health -= dam;
         health = Mathf.Clamp(health, 0, maxHealth);
@@ -153,7 +165,7 @@ public class BasicShip : MonoBehaviour
 
     protected virtual void DestroySelf()
     {
-        if(hpBarObject != null)   Destroy(hpBarObject);
+        if (hpBarObject != null) Destroy(hpBarObject);
         Destroy(gameObject);
         builderScript.money += builderScript.shipBounty;
     }

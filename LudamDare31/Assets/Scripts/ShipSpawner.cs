@@ -32,7 +32,7 @@ public class ShipSpawner : MonoBehaviour {
         if (Time.time > (basicSpawnTimer + 1 / basicSpawnRate))
         {
             basicSpawnTimer = Time.time;
-            Vector3 pos = new Vector3(GetOffScreen(1.5f), GetOffScreen(1.1f) , -Camera.main.gameObject.transform.position.z);
+            Vector3 pos = new Vector3(GetOffScreen(1.0f), GetOffScreen(1.0f) , -Camera.main.gameObject.transform.position.z);
             pos = Camera.main.ViewportToWorldPoint(pos);
 
             Vector3 dir =  - transform.position;
