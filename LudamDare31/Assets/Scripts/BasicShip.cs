@@ -95,7 +95,7 @@ public class BasicShip : MonoBehaviour
             dir.Normalize();
           turret.transform.up = dir;
 
-            if (Time.time > (fireTimer + 1 / fireRate))
+            if (Time.time > (fireTimer + 1 / fireRate) && transform.renderer.isVisible == true)
             {
 
 

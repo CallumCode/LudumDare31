@@ -32,7 +32,7 @@ public class ShipSpawner : MonoBehaviour {
         if (Time.time > (basicSpawnTimer + 1 / basicSpawnRate))
         {
             basicSpawnTimer = Time.time;
-            Vector3 pos = new Vector3(GetOffScreen(1.0f), GetOffScreen(1.0f) , -Camera.main.gameObject.transform.position.z);
+            Vector3 pos = new Vector3(GetOffScreen(), GetOffScreen() , -Camera.main.gameObject.transform.position.z);
             pos = Camera.main.ViewportToWorldPoint(pos);
 
             Vector3 dir =  - transform.position;
@@ -47,20 +47,16 @@ public class ShipSpawner : MonoBehaviour {
 
     }
 
-    float GetOffScreen(float max)
+    float GetOffScreen()
     {
         float value = Random.value;
+        float pos =  Random.Range(0.8f, 0.9f);
 
         if (value > 0.5f)
         {
-            value = Random.Range(1.0f ,max);
-        }
-        else
-        {
-            value = Random.Range(-max, 0.0f);
+            pos *= -1;
         }
 
- 
-        return value;
+        return pos;
     }
 }
