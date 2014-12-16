@@ -53,6 +53,8 @@
      <Compile Include="Assets\Scripts\Builder.cs" />
      <Compile Include="Assets\Scripts\Menu.cs" />
      <Compile Include="Assets\Scripts\ShipSpawner.cs" />
+     <Compile Include="Assets\Scripts\ShootingSprite.cs" />
+     <Compile Include="Assets\Scripts\ShootingStation.cs" />
      <Compile Include="Assets\Scripts\SpriteAnimCon.cs" />
      <Compile Include="Assets\Scripts\SpriteBase.cs" />
  <Reference Include="UnityEngine.UI">

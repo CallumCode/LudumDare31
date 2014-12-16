@@ -3,6 +3,7 @@ using System.Collections;
 
  [RequireComponent(typeof(Rigidbody2D))]
  [RequireComponent(typeof(SpriteAnimCon))]
+ [RequireComponent(typeof(AudioSource))]
 
 public class SpriteBase : MonoBehaviour 
 {
@@ -21,18 +22,39 @@ public class SpriteBase : MonoBehaviour
     SpriteAnimCon spriteAnimCon;
 
     BarScript hpBarScript;
+
+
+    protected  AudioSource deathSound;
+
+
  	// Use this for initialization
 	void Start ()
     {
-        spriteAnimCon  = GetComponent<SpriteAnimCon>();
+         
+           
+            
+	}
+
+    void GetSounds()
+    {
+        AudioSource[] AudioSources = GetComponents<AudioSource>();
+
+        deathSound = AudioSources[0];
+
+    }
+
+    protected virtual void Init()
+    {
+        spriteAnimCon = GetComponent<SpriteAnimCon>();
 
         if (BarPrefab != null)
         {
             HitPointBar();
         }
-	}
 
-     void HitPointBar()
+    }
+
+    void HitPointBar()
     {
         GameObject hpBarObject = Instantiate(BarPrefab, hpTransform.transform.position, Quaternion.identity) as GameObject;
         hpBarScript = hpBarObject.GetComponentInChildren<BarScript>();
@@ -74,7 +96,7 @@ public class SpriteBase : MonoBehaviour
      }
 
 
-    public void StartDeath()
+     protected void StartDeath()
      {
          float length = spriteAnimCon.CallDeathAnimation();
          Invoke("EndDeath", length);
@@ -85,4 +107,11 @@ public class SpriteBase : MonoBehaviour
          Destroy(gameObject);
      }
 
+
+     public void TakeDamage(float amount)
+     {
+
+         health -= amount;
+         health = Mathf.Clamp(health , 0, maxHealth);
+     }
 }
