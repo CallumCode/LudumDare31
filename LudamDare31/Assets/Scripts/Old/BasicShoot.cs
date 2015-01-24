@@ -15,8 +15,8 @@ public class BasicShoot : MonoBehaviour
     Vector3 clickPoint = Vector2.zero;
 
     const float maxHealth = 100;
-    public float health = maxHealth;
-
+    protected float health = maxHealth;
+ 
     public enum ModuleStateType { shop, preview, built };
     public ModuleStateType moduleState = ModuleStateType.preview;
 
@@ -114,7 +114,7 @@ public class BasicShoot : MonoBehaviour
 
             if (Input.GetMouseButtonDown(1))
             {
-                builderScript.RestockBasicShooter();
+               // builderScript.RestockBasicShooter();
                 ChaingeState(ModuleStateType.built);
             }
 

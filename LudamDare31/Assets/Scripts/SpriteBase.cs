@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using UnityEngine.UI;
 
  [RequireComponent(typeof(Rigidbody2D))]
  [RequireComponent(typeof(SpriteAnimCon))]
@@ -8,31 +9,23 @@ using System.Collections;
 public class SpriteBase : MonoBehaviour 
 {
 	const float maxHealth = 100;
-	float health = maxHealth;
+    protected float health = maxHealth;
 
     float force = 15;
     float rotateSpeed = 20;
-
-    public GameObject BarPrefab = null;
-
-
-    public GameObject hpTransform;
-
-
+ 
     SpriteAnimCon spriteAnimCon;
-
-    BarScript hpBarScript;
-
-
+      
     protected  AudioSource deathSound;
-
+    protected  Slider healthSlider;
 
  	// Use this for initialization
 	void Start ()
     {
-         
-           
-            
+
+    
+
+
 	}
 
     void GetSounds()
@@ -43,24 +36,26 @@ public class SpriteBase : MonoBehaviour
 
     }
 
-    protected virtual void Init()
+    public virtual void Init()
     {
+
         spriteAnimCon = GetComponent<SpriteAnimCon>();
 
-        if (BarPrefab != null)
+        healthSlider = GetComponentInChildren<Slider>();
+        if (healthSlider == null)
         {
-            HitPointBar();
+            Debug.Log("healthSlider is null");
+            Debug.Break();
+        }
+        else
+        {
+            healthSlider.maxValue = maxHealth;
+            healthSlider.minValue = 0;
         }
 
     }
 
-    void HitPointBar()
-    {
-        GameObject hpBarObject = Instantiate(BarPrefab, hpTransform.transform.position, Quaternion.identity) as GameObject;
-        hpBarScript = hpBarObject.GetComponentInChildren<BarScript>();
-        hpBarScript.objectToFollow = hpTransform.transform;
-    }
-
+ 
 	
 	// Update is called once per frame
 	void Update () 
@@ -113,5 +108,19 @@ public class SpriteBase : MonoBehaviour
 
          health -= amount;
          health = Mathf.Clamp(health , 0, maxHealth);
+
+         healthSlider.value = health;
      }
+
+     void OnCollisionEnter2D(Collision2D coll)
+     {
+         DoCollision(coll);
+     }
+
+     protected virtual void DoCollision(Collision2D coll)
+     {
+   
+     }
+
+   
 }

@@ -29,7 +29,7 @@ public class ShootingSprite : SpriteBase
         UpdateShoot();
 	}
 
-   override protected void Init()
+  public  override void Init()
     {
       base.Init();
       GetSounds();
@@ -46,11 +46,9 @@ public class ShootingSprite : SpriteBase
 
    protected void Shoot()
     {
-        shootSound.pitch = Random.Range(shootMinPitch, shootMaxPitch);
- 
-        shootSound.Play();
-        Instantiate(projectlePrefab, projectleSpawn.transform.position, projectleSpawn.transform.rotation);
-    
+        shootSound.pitch = Random.Range(shootMinPitch, shootMaxPitch); 
+        shootSound.Play();     
+        Instantiate(projectlePrefab, projectleSpawn.transform.position, projectleSpawn.transform.rotation);    
     }
 
     protected virtual void UpdateShoot()
@@ -59,6 +57,8 @@ public class ShootingSprite : SpriteBase
         {
 
             Vector3 dir = target.position - transform.position;
+            dir.z = 0;
+
             turret.transform.up = dir;
 
             if (Time.time > (fireTimer + 1 / fireRate))

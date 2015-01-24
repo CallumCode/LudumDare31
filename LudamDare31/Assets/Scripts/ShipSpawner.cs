@@ -3,7 +3,7 @@ using System.Collections;
 
 public class ShipSpawner : MonoBehaviour {
 
-    public GameObject BasicShootPrefab;
+    public GameObject ShootingShipPrefab;
     public GameObject BuilderObject;
 
     public float basicSpawnRate = 1;
@@ -13,10 +13,12 @@ public class ShipSpawner : MonoBehaviour {
 
     public float spawnRateGrowth = 0.001f;
 
-	// Use this for initialization
+
+    float spawnRadius = 250;
+ 	// Use this for initialization
 	void Start () 
     {
-	
+        basicSpawnTimer = Time.time - 1 / basicSpawnRate;
 	}
 	
 	// Update is called once per frame
@@ -32,18 +34,19 @@ public class ShipSpawner : MonoBehaviour {
         if (Time.time > (basicSpawnTimer + 1 / basicSpawnRate))
         {
             basicSpawnTimer = Time.time;
-            Vector3 pos = new Vector3(GetOffScreen(), GetOffScreen() , -Camera.main.gameObject.transform.position.z);
-            pos = Camera.main.ViewportToWorldPoint(pos);
+            Vector2 pos2d = Random.insideUnitCircle * spawnRadius;
 
+            Vector3 pos = center.position + new Vector3(pos2d.x , pos2d.y , 0);
+
+ 
             Vector3 dir =  - transform.position;
             dir.Normalize();
 
             Quaternion orir = Quaternion.LookRotation(Vector3.forward, dir);
 
-            GameObject ship =  Instantiate(BasicShootPrefab, pos, orir) as GameObject;
+             Instantiate(ShootingShipPrefab, pos, orir);
 
-            ship.GetComponent<BasicShip>().Init(BuilderObject.GetComponent<Builder>());
-        }
+         }
 
     }
 

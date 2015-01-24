@@ -1,16 +1,12 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 using System.Collections;
 
-public class BasicShip : MonoBehaviour
+public class BasicShip : SpriteBase
 {
 
-    public GameObject projectileObject = null;
-
-    public GameObject BarPrefab;
-    GameObject hpBarObject;
-
-    BarScript hpBarScript;
-
+    public GameObject projectileObject = null; 
+ 
     float speed = 2;
 
     public float rangeFraction = 0.2f;
@@ -22,35 +18,30 @@ public class BasicShip : MonoBehaviour
     float fireTimer = 0;
 
     public float crashDamage = 10;
-
-    const float maxHealth = 100;
-    public float health = maxHealth;
-
+ 
     Vector3 centerPos = Vector3.zero;
 
-    Builder builderScript;
-
+  
     AudioSource shootNoise;
     AudioSource explosionNoise;
 
-    public GameObject hpPoint;
-    public GameObject laserSpawn;
+     public GameObject laserSpawn;
     public GameObject turret;
+
+
+ 
     // Use this for initialization
     void Start()
     {
     }
 
-    public virtual void Init(Builder builder)
+    public override void Init()
     {
-        builderScript = builder;
-
+      //  base.Init();
+ 
         Physics2D.IgnoreLayerCollision(9, 11);
         Physics2D.IgnoreLayerCollision(11, 11);
-
-        hpBarObject = Instantiate(BarPrefab, hpPoint.transform.position, Quaternion.identity) as GameObject;
-        hpBarScript = hpBarObject.GetComponentInChildren<BarScript>();
-        hpBarScript.objectToFollow = hpPoint.transform;
+ 
 
         RaycastHit2D hit = Physics2D.Raycast(transform.position, Vector3.Normalize(centerPos - transform.position));
         Vector3 target = Vector3.zero;
@@ -124,7 +115,7 @@ public class BasicShip : MonoBehaviour
 
 
         //   Debug.Log(hit.collider.tag);
-        Vector3 target = builderScript.GetAvgPos();
+        Vector3 target = Vector3.zero; //builderScript.GetAvgPos();
 
         Vector3 fly = Vector3.Normalize(target - transform.position);
         Vector3 orbit = Vector3.Cross(fly, Vector3.forward);
@@ -140,12 +131,9 @@ public class BasicShip : MonoBehaviour
 
     }
 
-    void OnCollisionEnter2D(Collision2D coll)
-    {
-        DoCollision(coll);
-    }
 
-    protected virtual void DoCollision(Collision2D coll)
+
+    protected override void DoCollision(Collision2D coll)
     {
         if (coll.gameObject.CompareTag("StationProjectile"))
         {
@@ -154,20 +142,11 @@ public class BasicShip : MonoBehaviour
         }
     }
 
-
-    public void TakeDamage(float dam)
-    {
-        health -= dam;
-        health = Mathf.Clamp(health, 0, maxHealth);
-
-        if (hpBarScript != null) hpBarScript.SetValue(health / maxHealth);
-    }
+ 
 
     protected virtual void DestroySelf()
     {
-        if (hpBarObject != null) Destroy(hpBarObject);
         Destroy(gameObject);
-        builderScript.money += builderScript.shipBounty;
     }
 
 }

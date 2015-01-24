@@ -4,7 +4,7 @@ using System.Collections;
 
 public class Builder : MonoBehaviour
 {
-    public GameObject BasicShooter;
+    public GameObject shootingStationPrefab;
 
     public Transform shopTransform;
     public Transform startTransform;
@@ -25,13 +25,12 @@ public class Builder : MonoBehaviour
     {
         modulesList = new ArrayList();
 
-        GameObject startObject = Instantiate(BasicShooter, startTransform.position, Quaternion.identity) as GameObject;
-        BasicShoot startScript = startObject.GetComponent<BasicShoot>();
-        startScript.Init(this );
-        startScript.ChaingeState(BasicShoot.ModuleStateType.built);
-      
+        GameObject startObject = Instantiate(shootingStationPrefab, startTransform.position, Quaternion.identity) as GameObject;
+        ShootingStation startStationScript = startObject.GetComponent<ShootingStation>();
+        startStationScript.Init();
+       
         modulesList.Add(startObject);
-        RestockBasicShooter();
+   //     RestockBasicShooter();
 
         moneyText = moneyTextObject.GetComponent<Text>();
 	}
@@ -42,15 +41,15 @@ public class Builder : MonoBehaviour
         money += moneyRate * Time.deltaTime;
         moneyText.text = "Money " + Mathf.Round(money);
 	}
-
+    /*
    public void RestockBasicShooter()
     {
-        GameObject shopObject = Instantiate(BasicShooter, shopTransform.position, Quaternion.identity) as GameObject;
+        GameObject shopObject = Instantiate(shootingStationPrefab, shopTransform.position, Quaternion.identity) as GameObject;
         BasicShoot shopScript = shopObject.GetComponent<BasicShoot>();
         shopScript.Init(this);
         shopScript.ChaingeState(BasicShoot.ModuleStateType.shop);
         moduleCounter++; 
-    }
+    }*/
 
    public void ModuleLost(int index)
    {

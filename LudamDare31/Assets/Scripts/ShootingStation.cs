@@ -10,7 +10,7 @@ public class ShootingStation : ShootingSprite
         Init();
     }
 
-    override protected void Init()
+    override public void Init()
     {
         base.Init();
         GetSounds();
@@ -40,6 +40,7 @@ public class ShootingStation : ShootingSprite
 
        Vector3 dir = targetPos - Camera.main.WorldToScreenPoint(transform.position);
        dir.Normalize();
+       dir.z = 0;
         turret.transform.up = dir;
 
 
